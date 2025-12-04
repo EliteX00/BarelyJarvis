@@ -1,7 +1,7 @@
 # BarelyJarvis 
 Welcome to BarelyJarvis my totally serious attempt to build a jarvis-like system even though i have my budget and sleep schedule hanging by a thread.
 
-RIght now i am building the software part, because i dont have the hardware yet - thats exactly why m applying for Hack Club $400 Grant
+Right now i am building the software part, because i dont have the hardware yet - thats exactly why m applying for Hack Club $400 Grant
 
 Once I get the funding i will finally be able to buy the projector, webcam, acrylic sheet, mic, and other parts to turn this into a full sci-fi setup
 For now BarelyJarvis runs on my PC in “prototype mode” but the plan is way bigger
