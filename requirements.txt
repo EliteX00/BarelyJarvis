@@ -1,2 +1,5 @@
 groq
-onnxruntime
+deepgram-sdk
+websocket-client
+requests
+pyautogui
