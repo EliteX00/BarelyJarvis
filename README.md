@@ -3,47 +3,65 @@ Welcome to BarelyJarvis my totally serious attempt to build a jarvis-like system
 
 Right now i am building the software part, because i dont have the hardware yet - thats exactly why m applying for Hack Club $400 Grant
 
-Once I get the funding i will finally be able to buy the projector, webcam, acrylic sheet, mic, and other parts to turn this into a full sci-fi setup
-For now BarelyJarvis runs on my PC in “prototype mode” but the plan is way bigger
+Yes this entire project is held together by hopes, dreams, and API keys
 
-# what barelyjarvis can do right now
+# what barelyjarvis can do right now (somehow)
 - talks in jarvis style
 - has memory (like 10 message)
 - opens apps using secret execution codes
-- fast response using Groq Llama 3.3
+- uses Groq Llama 3.3 for fast replies
+- suggests and open spotify songs
 
  Basically its jarvis but barely jarvis
 
- # voice mode (coming soon)
-im adding voice synthesis + speech input, so that BarelyJarvis can
+ # voice mode (TTS Ready, STT in Development)
+BarelyJarvis can now speak with an actual voice and everything
 
- - talk like a gentleman or
- - listen to me cry
+# Text-to-Speech(TTS) - READY
+  - Powered by Deepgram’s Aura-2 Aries TTS model through their WebSocket API. It streams audio in real time so he responds faster than my brain
 
-# UI Plans (just ideas for now)
-Im planning to build a sci-fi interface for BarelyJarvis
-Right now none of this is built yet 
+# Speech-to-Text - IN DEVELOPMENT
+  - still wiring it up. Coming soon so that BarelyJarvis can listen to me instead of waiting for me to type for centuries
 
-The planned ui will have
+# Holomat UI Plan (just dreams for now)
+The final setup won’t be a normal screen
+I am building a projected control surface inspired by sci-fi holo-tables
 
-- clean widgets
-- a command panel
-- smooth animation (nothing crazy)
-- a circle thingy that moves when it talks
-- quick app shortcuts
+The plan:
+
+- a mini projector projects the UI onto a matte-black vinyl surface
+- under the vinyl will be a capacitive touch layer
+- under that is a desk mat acting as the base
+- a webcam handles gesture/presence detection
+- UI shows: widgets, reactive speech circle, shortcuts, etc
+
+In other words:
+```bash
+Projector → Vinyl → Touch Film → Desk Mat → Table → Jarvis vibes
+```
+
+Its basically Tony Stark tech if Tony Stark had a empty wallet and bad WiFi
 
 # how to run (if u dare)
 1. install deps
     ```bash
     $ pip install -r requirements.txt
     ```
-2. throw ur groq api into the code
+2. add your API keys into the code (u will figure it out.... hopefully)
 3. run it
   ```bash
     $ python3 barelyjarvis.py
   ```
-4. ask anything like - open spotify
-5. pray it dont roast you
+4. Ask things like:
+   - "open spotify”
+   - “suggest a song”
+   - “run diagnostics”
+   - “jarvis what is life”
+5. pray it dont crash
 
-# Status - (  building slowly but surely kinda)
-- BarelyJarvis is alive (maybe)
+# Current Status
+- AI brain: ✔️
+- TTS voice: ✔️
+- STT hearing: 🔧 soon
+- Holomat UI: still in imaginations
+- BarelyJarvis: alive... somehow
