@@ -1,89 +1,62 @@
-# voice/tts.py
-
+import asyncio
 import json
 import os
-import time
-import wave
+from asyncio.timeouts import timeout
 
-import websocket
-import _thread 
+import numpy as np
+import pyaudio
+import sounddevice as sd
+import websockets
+from dotenv import load_dotenv
 
-DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY", "")
+load_dotenv()
 
-global_ws = None
-global_wf = None
+WEBSOCKET_URL = "wss://api.deepgram.com/v1/speak?model=aura-2-aries-en"
+headers = {"Authorization": f"Token {os.getenv("DEEPGRAM_API_KEY")}"}
 
-def init_tts_connection():
-    """
-    Initialize Deepgram Aura-2 Aries TTS over WebSocket.
-    """
-    global global_ws, global_wf
 
-    if not DEEPGRAM_API_KEY:
-        print("[WARN] DEEPGRAM_API_KEY is not set. TTS will not work.")
-        return
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 24000
+CHUNK = 1024
 
-    WS_URL = (
-        "wss://api.deepgram.com/v1/speak?"
-        "model=aura-2-aries-en&encoding=linear16&sample_rate=16000"
+websocket = None
+
+
+async def tts_connect():
+    global websocket
+    websocket = await websockets.connect(WEBSOCKET_URL, additional_headers=headers)
+    return websocket
+
+
+async def speak(text):
+    audio = pyaudio.PyAudio()
+    stream = audio.open(
+        format=FORMAT,
+        channels=CHANNELS,
+        rate=RATE,
+        output=True,
+        frames_per_buffer=CHUNK,
     )
 
-    AUDIO_FILE = "output.wav"
+    text_payload = {"type": "Speak", "text": f"{text}"}
+    await websocket.send(json.dumps(text_payload))
 
-    global_wf = wave.open(AUDIO_FILE, "wb")
-    global_wf.setnchannels(1)
-    global_wf.setsampwidth(2)
-    global_wf.setframerate(16000)
+    flush_payload = {"type": "Flush"}
+    await websocket.send(json.dumps(flush_payload))
 
-    headers = [f"Authorization: Token {DEEPGRAM_API_KEY}"]
-
-    def on_open(ws):
-        print("[TTS] WebSocket connected.")
-
-    def on_message(ws, message):
-        global global_wf
+    while True:
+        message = await websocket.recv()
 
         if isinstance(message, bytes):
-            global_wf.writeframes(message)
-        else:
-            print("[TTS JSON]", message)
 
-        if isinstance(message, str) and '"Flushed"' in message:
-            global_wf.close()
-            os.system("mpv output.wav")
+            stream.write(message)
+        elif isinstance(message, str):
 
-            global_wf = wave.open("output.wav", "wb")
-            global_wf.setnchannels(1)
-            global_wf.setsampwidth(2)
-            global_wf.setframerate(16000)
-
-    def on_close(ws, *_):
-        print("[TTS] WebSocket closed — reconnecting…")
-        time.sleep(1)
-        init_tts_connection()
-
-    global_ws = websocket.WebSocketApp(
-        WS_URL,
-        header=headers,
-        on_open=on_open,
-        on_message=on_message,
-        on_close=on_close,
-    )
-
-    _thread.start_new_thread(global_ws.run_forever, ())
-
-def tts_aries(text: str):
-    """
-    Send text to Deepgram TTS over WebSocket.
-    """
-    global global_ws
-
-    if not DEEPGRAM_API_KEY:
-        print("[TTS] Skipping, no DEEPGRAM_API_KEY set.")
-        return
-
-    if global_ws:
-        global_ws.send(json.dumps({"type": "Speak", "text": text}))
-        global_ws.send(json.dumps({"type": "Flush"}))
-    else:
-        print("[TTS] WebSocket not ready.")
+            try:
+                control_message = json.loads(message)
+                print(f"Received control message: {control_message}")
+                if control_message.get("type") == "Flushed":
+                    break
+            except json.JSONDecodeError:
+                print(f"Received non-JSON text message: {message}")

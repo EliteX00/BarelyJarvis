@@ -6,11 +6,13 @@ import re
 import time
 import webbrowser
 
-import pyautogui
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "")
+
 
 def get_spotify_token():
     if not SPOTIFY_CLIENT_ID or not SPOTIFY_CLIENT_SECRET:
@@ -35,6 +37,7 @@ def get_spotify_token():
 
     return r.json().get("access_token")
 
+
 def track_search(query: str):
     token = get_spotify_token()
     if not token:
@@ -58,6 +61,7 @@ def track_search(query: str):
 
     return tracks[0]
 
+
 def spotify_play(ai_response: str):
     match = re.search(r"SONG:\s*(.+)", ai_response)
     if not match:
@@ -70,5 +74,3 @@ def spotify_play(ai_response: str):
 
     url = track["external_urls"]["spotify"]
     webbrowser.open(url)
-    time.sleep(5)
-    pyautogui.press("space")

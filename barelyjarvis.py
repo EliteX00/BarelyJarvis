@@ -1,13 +1,11 @@
 # jarvis.py
+import asyncio
 import re
 
 from core.brain import get_ai_response
 from core.execution import execute_from_ai_response
-from voice.tts import init_tts_connection, tts_aries
+from voice.tts import speak, tts_connect
 
-print("Initializing Jarvis TTS system.....")
-init_tts_connection()
-print("Jarvis voice module online..")
 
 def clean_response_for_tts(ai_response: str) -> str:
 
@@ -16,8 +14,10 @@ def clean_response_for_tts(ai_response: str) -> str:
     text = re.sub(r"EXECUTION_CODE:\s*A\d+", "", text)
     return text.strip()
 
-if __name__ == "__main__":
+
+async def main():
     while True:
+        await tts_connect()
         try:
             user_query = input("User: ")
         except (EOFError, KeyboardInterrupt):
@@ -30,6 +30,10 @@ if __name__ == "__main__":
 
         clean_text = clean_response_for_tts(ai_response)
         if clean_text:
-            tts_aries(clean_text)
+            await speak(clean_text)
 
         execute_from_ai_response(ai_response)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

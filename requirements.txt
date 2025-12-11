@@ -2,4 +2,4 @@ groq
 deepgram-sdk
 websocket-client
 requests
-pyautogui
+dotenv
